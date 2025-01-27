@@ -1,0 +1,79 @@
+[sqlfluff]
+dialect = postgres
+encoding = utf-8
+max_line_length = 99
+warnings = AM04
+
+exclude_rules = structure.column_order, LT01
+
+# Very large files can make the parser effectively hang.
+# The more efficient check is the _byte_ limit check which
+# is enabled by default. The previous _character_ limit check
+# is still present for backward compatibility. This will be
+# removed in a future version.
+# Set either to 0 to disable.
+large_file_skip_char_limit = 0
+large_file_skip_byte_limit = 50000
+
+[sqlfluff:indentation]
+indent_unit = space
+tab_space_size = 4
+indented_joins = True
+indented_ctes = False
+
+[sqlfluff:rules:ambiguous.join]
+# Fully qualify JOIN clause
+fully_qualify_join_types = both
+
+[sqlfluff:rules:capitalisation.keywords]
+# Keywords
+capitalisation_policy = upper
+
+[sqlfluff:rules:capitalisation.identifiers]
+# Unquoted identifiers
+extended_capitalisation_policy = lower
+
+[sqlfluff:rules:capitalisation.functions]
+# Functions
+extended_capitalisation_policy = lower
+
+[sqlfluff:rules:capitalisation.literals]
+# Null & Boolean Literals
+capitalisation_policy = upper
+
+[sqlfluff:rules:capitalisation.types]
+# Data Types
+extended_capitalisation_policy = upper
+
+[sqlfluff:rules:convention.casting_style]
+# SQL type casting
+preferred_type_casting_style = shorthand
+
+[sqlfluff:rules:convention.count_rows]
+# Consistent syntax to count all rows
+prefer_count_1 = True
+
+[sqlfluff:rules:convention.terminator]
+multiline_newline = False
+require_final_semicolon = True
+
+[sqlfluff:rules:references.keywords]
+# Keywords should not be used as identifiers.
+unquoted_identifiers_policy = aliases
+quoted_identifiers_policy = none
+# Comma separated list of words to ignore for this rule
+ignore_words = None
+ignore_words_regex = None
+
+[sqlfluff:rules:references.special_chars]
+# Special characters in identifiers
+unquoted_identifiers_policy = all
+quoted_identifiers_policy = all
+allow_space_in_identifier = True
+additional_allowed_characters = '.-'
+ignore_words = None
+ignore_words_regex = None
+
+[sqlfluff:rules:structure.subquery]
+# By default, allow subqueries in from clauses, but not join clauses
+forbid_subquery_in = both

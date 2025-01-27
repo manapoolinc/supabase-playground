@@ -1,0 +1,11 @@
+CREATE TABLE countries (
+    id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    name TEXT NOT NULL UNIQUE
+);
+
+ALTER TABLE countries ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "public can read countries"
+ON public.countries
+FOR SELECT TO anon
+USING (TRUE);
