@@ -38,6 +38,7 @@ export type Database = {
         Row: {
           id: number
           name: string
+          lowername: string | null
         }
         Insert: {
           id?: never
@@ -83,7 +84,21 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      country_by_name: {
+        Args: {
+          name: string
+        }
+        Returns: {
+          id: number
+          name: string
+        }[]
+      }
+      lowername: {
+        Args: {
+          "": unknown
+        }
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never

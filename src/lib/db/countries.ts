@@ -4,6 +4,7 @@ import { createClient } from "@supabase/supabase-js";
 
 type CountryData = {
   name: string;
+  lowername: string | null;
   country_alphas: {
     alpha2: string;
     alpha3: string;
@@ -18,6 +19,7 @@ export async function getCountries(): Promise<CountryData[]> {
     .select(
       `
       name,
+      lowername,
       country_alphas!inner (
         alpha2,
         alpha3
@@ -33,17 +35,17 @@ export async function getCountries(): Promise<CountryData[]> {
   const usData: CountryData = usResponse;
 
   const { data: caResponse, error: caError } = await supabase
-    .from("countries")
+    .rpc("country_by_name", { name: "Canada" })
     .select(
       `
       name,
+      lowername,
       country_alphas!inner (
         alpha2,
         alpha3
       )
       `
     )
-    .eq("name", "Canada")
     .single();
   if (caError) {
     console.error(caError);
@@ -54,7 +56,7 @@ export async function getCountries(): Promise<CountryData[]> {
    * computed field on the rpc select: https://postgrest.org/en/v12/references/api/computed_fields.html
    *
    * Returning a type of:
-   * const caResponse: SelectQueryError<"column 'lowername' does not exist on 'country_from_alpha2'.">
+   * const caResponse: SelectQueryError<"column 'lowername' does not exist on 'country_by_name'.">
    */
   const caData: CountryData = caResponse;
 
