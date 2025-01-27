@@ -8,6 +8,9 @@ type CountryData = {
     alpha2: string;
     alpha3: string;
   };
+  country_alpha_locations?: {
+    location: string;
+  };
 };
 
 export async function getCountries(): Promise<CountryData[]> {
@@ -40,6 +43,9 @@ export async function getCountries(): Promise<CountryData[]> {
       country_alphas!inner (
         alpha2,
         alpha3
+      ),
+      country_alpha_locations!inner (
+        location
       )
       `
     )
@@ -50,11 +56,47 @@ export async function getCountries(): Promise<CountryData[]> {
     throw new Error("Failed to load data");
   }
   /**
-   * This line results in a type error because supabase fails to recognize the
-   * computed field on the rpc select: https://postgrest.org/en/v12/references/api/computed_fields.html
+   * The next line results in a type error because supabase fails to recognize the
+   * computed relationship: https://postgrest.org/en/v12/references/api/resource_embedding.html#computed-relationships
    *
    * Returning a type of:
-   * const caResponse: SelectQueryError<"column 'lowername' does not exist on 'country_from_alpha2'.">
+   * const caResponse: {
+   *   name: string;
+   *   lowername: string | null;
+   *   country_alphas: {
+   *     alpha2: string;
+   *     alpha3: string;
+   *   };
+   *   country_alpha_locations: SelectQueryError<"could not find the relation between countries and country_alpha_locations">;
+   * }
+   *
+   * Note, supabase-js<=2.47.7 returned a type of, which is closer but still wrong:
+   * const usResponse: {
+   *   name: string;
+   *   lowername: string | null;
+   *   country_alphas: {
+   *     alpha2: string;
+   *     alpha3: string;
+   *   };
+   *   country_alpha_locations: {
+   *     location: string;
+   *     lowerlocation: string | null;
+   *   }[]; // <-- The result should not be an array
+   * }
+   *
+   * In actuality, supabase is returning:
+   * const usResponse: {
+   *   name: string;
+   *   lowername: string | null;
+   *   country_alphas: {
+   *     alpha2: string;
+   *     alpha3: string;
+   *   };
+   *   country_alpha_locations: {
+   *     location: string;
+   *     lowerlocation: string | null;
+   *   };
+   * }
    */
   const caData: CountryData = caResponse;
 

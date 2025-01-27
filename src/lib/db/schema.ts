@@ -38,6 +38,8 @@ export type Database = {
         Row: {
           id: number
           name: string
+          country_alpha_locations: unknown | null
+          lowername: string | null
         }
         Insert: {
           id?: never
@@ -46,6 +48,24 @@ export type Database = {
         Update: {
           id?: never
           name?: string
+        }
+        Relationships: []
+      }
+      country_alpha_locations: {
+        Row: {
+          alpha2: string
+          id: number
+          location: string
+        }
+        Insert: {
+          alpha2: string
+          id?: never
+          location: string
+        }
+        Update: {
+          alpha2?: string
+          id?: never
+          location?: string
         }
         Relationships: []
       }
@@ -83,7 +103,22 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      country_alpha_locations: {
+        Args: {
+          "": unknown
+        }
+        Returns: {
+          alpha2: string
+          id: number
+          location: string
+        }[]
+      }
+      lowername: {
+        Args: {
+          "": unknown
+        }
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never

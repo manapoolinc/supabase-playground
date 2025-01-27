@@ -30,3 +30,10 @@ SELECT
     'MEX' AS alpha3
 FROM countries
 WHERE name = 'Mexico';
+
+-- Insert some country alpha locations
+INSERT INTO country_alpha_locations (alpha2, location)
+VALUES
+('CA', 'North North America'),
+('US', 'Mid North America'),
+('MX', 'South North America');
