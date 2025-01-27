@@ -83,7 +83,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      all_countries: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          id: number
+          name: string
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never

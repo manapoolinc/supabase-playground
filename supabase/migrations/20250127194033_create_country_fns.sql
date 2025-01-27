@@ -1,0 +1,7 @@
+CREATE OR REPLACE FUNCTION all_countries()
+RETURNS SETOF COUNTRIES
+STABLE PARALLEL SAFE
+LANGUAGE sql
+AS $function$
+    SELECT * FROM countries;
+$function$;

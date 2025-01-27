@@ -33,7 +33,7 @@ export async function getCountries(): Promise<CountryData[]> {
   const usData: CountryData = usResponse;
 
   const { data: caResponse, error: caError } = await supabase
-    .from("countries")
+    .rpc("all_countries")
     .select(
       `
       name,
@@ -43,6 +43,13 @@ export async function getCountries(): Promise<CountryData[]> {
       )
       `
     )
+    /**
+     * This line results in a type error because supabase fails to recognize read filters
+     * on rpc calls: https://postgrest.org/en/v12/references/api/functions.html
+     * Property 'eq' does not exist on type 'PostgrestTransformBuilder<{ Tables: { countries: { Row: { id: number; name: string; lowername: string | null; }; Insert: { id?: undefined; name: string; }; Update: { id?: undefined; name?: string | undefined; }; Relationships: []; }; country_alphas: { ...; }; }; Views: {}; Functions: { ...; }; Enums: {}; CompositeTy...'.ts(2339)
+     *
+     * Note: it works as expected despite the type error
+     */
     .eq("name", "Canada")
     .single();
   if (caError) {
