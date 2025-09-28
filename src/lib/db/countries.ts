@@ -102,3 +102,68 @@ export async function getCountries(): Promise<CountryData[]> {
 
   return [usData, caData];
 }
+
+export async function getCountriesView(): Promise<CountryData[]> {
+  const supabase = createClient<Database>(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY);
+
+  const { data: usResponse, error: usError } = await supabase
+    .from("countries_view")
+    .select(
+      `
+      id,
+      ...countries!inner (
+        name,
+        country_alphas!inner (
+          alpha2,
+          alpha3
+        )
+      )
+      `
+    )
+    .eq("name", "United States")
+    .single();
+  if (usError) {
+    console.error(usError);
+    throw new Error("Failed to load data");
+  }
+  /**
+   * The next line should work but instead fails because usResponse is typed as
+   *
+   * ```
+   * const usResponse: {
+   *   id: number | null;
+   *   countries: SelectQueryError<"could not find the relation between countries_view and countries">;
+   * }
+   * ```
+   *
+   * Due to a failure of supabase to recognize the join function between countries_view and countries
+   */
+  const usData: CountryData = usResponse;
+
+  const { data: caResponse, error: caError } = await supabase
+    .from("countries_view")
+    .select(
+      `
+      id,
+      ...countries!inner (
+        name,
+        country_alphas!inner (
+          alpha2,
+          alpha3
+        ),
+        country_alpha_locations!inner (
+          location
+        )
+      )
+      `
+    )
+    .eq("name", "Canada")
+    .single();
+  if (caError) {
+    console.error(caError);
+    throw new Error("Failed to load data");
+  }
+  const caData: CountryData = caResponse;
+
+  return [usData, caData];
+}
