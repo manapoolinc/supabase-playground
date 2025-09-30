@@ -60,5 +60,31 @@ export async function getCountries(): Promise<CountryData[]> {
    */
   const caData: CountryData = caResponse;
 
-  return [usData, caData];
+  const { data: mxResponse, error: mxError } = await supabase
+    .rpc("countries_by_name", { name: "Mexico" })
+    .select(
+      `
+      name,
+      lowername,
+      country_alphas!inner (
+        alpha2,
+        alpha3
+      )
+      `
+    )
+    .single();
+  if (mxError) {
+    console.error(mxError);
+    throw new Error("Failed to load data");
+  }
+  /**
+   * This line results in a type error because supabase fails to recognize the
+   * computed field on the rpc select: https://postgrest.org/en/v12/references/api/computed_fields.html
+   *
+   * Returning a type of:
+   * const mxResponse: SelectQueryError<"column 'lowername' does not exist on 'countries_by_name'.">
+   */
+  const mxData: CountryData = mxResponse;
+
+  return [usData, caData, mxData];
 }
