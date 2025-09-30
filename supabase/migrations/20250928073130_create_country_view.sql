@@ -17,3 +17,11 @@ LANGUAGE sql
 AS $function$
     SELECT * FROM countries WHERE name = $1.name;
 $function$;
+
+CREATE OR REPLACE FUNCTION countries_view(COUNTRIES)
+RETURNS SETOF COUNTRIES_VIEW ROWS 1
+STABLE PARALLEL SAFE CALLED ON NULL INPUT
+LANGUAGE sql
+AS $function$
+    SELECT * FROM countries_view WHERE name = $1.name;
+$function$;

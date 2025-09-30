@@ -165,5 +165,37 @@ export async function getCountriesView(): Promise<CountryData[]> {
   }
   const caData: CountryData = caResponse;
 
-  return [usData, caData];
+  const { data: mexResponse, error: mexError } = await supabase
+    .from("countries")
+    .select(
+      `
+      id,
+      ...countries_view!inner(
+        name
+      ),
+      country_alphas!inner (
+        alpha2,
+        alpha3
+      ),
+      country_alpha_locations!inner (
+        location
+      )
+      `
+    )
+    .eq("name", "Mexico")
+    .single();
+  if (mexError) {
+    console.error(mexError);
+    throw new Error("Failed to load data");
+  }
+  /**
+   * This is expected to error while trying to assign string | null to string
+   * because postgres refuses to know whether view columns are non-nullable.
+   *
+   * Any other error is a failure of supabase to recognize the join function
+   * between countries and countries_view
+   */
+  const mexData: CountryData = mexResponse;
+
+  return [usData, caData, mexData];
 }

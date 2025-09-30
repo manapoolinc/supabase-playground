@@ -38,6 +38,10 @@ export type Database = {
         Row: {
           id: number
           name: string
+          countries_view: {
+            id: number | null
+            name: string | null
+          } | null
           country_alpha_locations: {
             alpha2: string
             id: number
@@ -107,11 +111,41 @@ export type Database = {
         Row: {
           id: number | null
           name: string | null
+          countries: {
+            id: number
+            name: string
+          } | null
         }
         Relationships: []
       }
     }
     Functions: {
+      countries: {
+        Args: { "": unknown }
+        Returns: {
+          id: number
+          name: string
+        }
+        SetofOptions: {
+          from: "countries_view"
+          to: "countries"
+          isOneToOne: true
+          isSetofReturn: true
+        }
+      }
+      countries_view: {
+        Args: { "": Database["public"]["Tables"]["countries"]["Row"] }
+        Returns: {
+          id: number | null
+          name: string | null
+        }
+        SetofOptions: {
+          from: "countries"
+          to: "countries_view"
+          isOneToOne: true
+          isSetofReturn: true
+        }
+      }
       country_alpha_locations: {
         Args: { "": Database["public"]["Tables"]["countries"]["Row"] }
         Returns: {
