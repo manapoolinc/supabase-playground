@@ -65,5 +65,34 @@ export async function getCountries(): Promise<CountryData[]> {
    */
   const caData: CountryData = caResponse;
 
-  return [usData, caData];
+  let mexQuery = supabase.from("countries").select(
+    `
+      name,
+      country_alphas!inner (
+        alpha2,
+        alpha3
+      )
+      `
+  );
+  const a = "a";
+  if (a === "a") {
+    mexQuery = supabase.rpc("all_countries").select(
+      `
+        name,
+        country_alphas!inner (
+          alpha2,
+          alpha3
+        )
+        `
+    );
+  }
+  mexQuery = mexQuery.eq("name", "Mexico");
+  const { data: mexResponse, error: mexError } = await mexQuery.single();
+  if (mexError) {
+    console.error(mexError);
+    throw new Error("Failed to load data");
+  }
+  const mexData: CountryData = mexResponse;
+
+  return [usData, caData, mexData];
 }
